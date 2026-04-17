@@ -28,7 +28,7 @@ export async function getArticleMetadata(articleType: ArticleType, slug: string)
     .use(html)
     .process(metadata.title)
   ;
-  const title = processedTitle.toString();
+  const title = processedTitle.toString().replace(/<p>([\s\S]+)<\/p>/, '$1');
 
   return {
     title,

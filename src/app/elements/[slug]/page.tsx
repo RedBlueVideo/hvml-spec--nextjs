@@ -8,6 +8,10 @@ export type ElementPageProps = {
   }>,
 };
 
+/**
+ * TODO: Make generic across page types - use multiple dynamic route parts
+ * e.g. `[category]/[slug]`
+ */
 export default async function ElementPage(props: ElementPageProps) {
   const { slug } = await props.params;
   const metadata = await getArticleMetadata('elements', slug);
@@ -15,7 +19,7 @@ export default async function ElementPage(props: ElementPageProps) {
   const Content = dynamic(() => import(importPath));
 
   /**
-   * Ordinal suffixes not supported with native `toLocaleDateString` method
+   * TODO: Ordinal suffixes not supported with native `toLocaleDateString` method
    */
   const formattedDate = (new Date(metadata.date)).toLocaleDateString(
     'en-US',
@@ -26,9 +30,17 @@ export default async function ElementPage(props: ElementPageProps) {
     },
   );
 
+  const title = metadata.title.replaceAll(
+    /<code>([^<>]+)<\/code>/g,
+    '<code class="language-text">$1</code>',
+  );
+  // title = title.replaceAll(/<p>([^<>]+)<\/p>/g, '$1');
+
+  // console.log({title})
+
   return (
     <article>
-      <h1 dangerouslySetInnerHTML={{ __html: metadata.title }} />
+      <h1 dangerouslySetInnerHTML={{ __html: title }} />
       <p>Last updated: <time dateTime={metadata.date}>{formattedDate}</time></p>
       <Content />
     </article>
